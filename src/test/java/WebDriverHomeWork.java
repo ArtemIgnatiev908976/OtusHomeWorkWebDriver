@@ -9,6 +9,7 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.apache.logging.log4j.LogManager;
 
+import java.util.concurrent.TimeUnit;
 
 
 public class WebDriverHomeWork {
@@ -22,6 +23,8 @@ public class WebDriverHomeWork {
     public void setUp() {
         WebDriverManager.chromedriver().setup();
         driver = new ChromeDriver();
+        driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+        logger.info("Драйвер поднят");
     }
 
 
@@ -29,36 +32,43 @@ public class WebDriverHomeWork {
     public void setDow() {
         if (driver != null)
             driver.quit();
+        logger.info("Выход");
     }
 
     @Test
-    public void duckDuckGoTest(){
+    public void duckDuckGoTest() {
+        driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
         ChromeOptions options = new ChromeOptions();
         options.addArguments("headless");
         driver = new ChromeDriver(options);
-
         driver.get("https://duckduckgo.com/");
         enterTextArea(driver.findElement(By.xpath("//input[@id='search_form_input_homepage']")),"ОТУС" );
         driver.findElement(By.xpath("//input[@id='search_button_homepage']")).click();
         checkTextTextArea(driver.findElement(By.xpath("//article[@id='r1-0']//h2/a/span")),"Онлайн‑курсы для профессионалов, дистанционное обучение современным ..." );
+        logger.info("Кейс 1 пройден");
     }
     @Test
     public void w3LayoutsTest(){
-
+        driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
         driver.manage().window().fullscreen();
         driver.get("https://demo.w3layouts.com/demos_new/template_demo/03-10-2020/photoflash-liberty-demo_Free/685659620/web/index.html?_ga=2.181802926.889871791.1632394818-2083132868.1632394818");
         driver.findElement(By.xpath("//span[@class='image-block']/a")).click();
         WebElement modal = driver.findElement(By.xpath("//div[@class='pp_pic_holder light_rounded']"));
         Assert.assertTrue(modal.isDisplayed());
+        logger.info("Кейс 2 пройден");
     }
 
     @Test
     public void otusTest(){
+        driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
         driver.get("https://otus.ru/");
         driver.manage().window().maximize();
         auth();
+        String actual = driver.getTitle();
+        Assert.assertEquals("Онлайн‑курсы для профессионалов, дистанционное обучение современным профессиям", actual);
         String  cookiesGet = String.valueOf(driver.manage().getCookies());
         logger.info(cookiesGet);
+        logger.info("Кейс 3 пройден");
     }
 
 
@@ -74,11 +84,6 @@ public class WebDriverHomeWork {
 
     private void auth(){
         driver.findElement(By.cssSelector("button.header2__auth")).click();
-        try {
-            Thread.sleep(3000);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
         driver.findElement(By.xpath("//form[@action = '/login/']//input[@name='email']")).sendKeys(login);
         driver.findElement(By.xpath("//form[@action = '/login/']//input[@name='password']")).sendKeys(password);
         driver.findElement(By.xpath("//form[@action = '/login/']//button[@type='submit']")).click();
